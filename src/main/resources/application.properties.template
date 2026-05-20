@@ -14,14 +14,16 @@ logging.level.org.springframework.web=INFO
 ##
 # The base url of JIRA to use. For example, "https://jira-stage.spring.io"
 #jira.base-url=https://jira-stage.spring.io
-jira.base-url=https://issues.apache.org/jira
+#jira.base-url=https://issues.apache.org/jira
+jira.base-url=https://redhat.atlassian.net
 
 ##
 # The JIRA project id to migrate. For example, "SEC".
 #jira.projectId=SPR
 #jira.projectId=SEC
 #jira.projectId=MCLEAN
-jira.projectId=SUREFIRE
+#jira.projectId=SUREFIRE
+jira.projectId=JBTM
 
 
 # for MPOM
@@ -36,7 +38,8 @@ jira.projectId=SUREFIRE
 #github.repository-slug=rstoyanchev/spr-issue-migration-test
 #github.repository-slug=rwinch/spring-security-migrate-issues
 #github.repository-slug=rstoyanchev/swf-migration-test
-github.repository-slug=support-and-care/mvn-surefire-issues-migration-test
+#github.repository-slug=support-and-care/mvn-surefire-issues-migration-test
+github.repository-slug=jmfinelli/narayana
 
 ##
 # If set, the migration script will attempt to delete / create a GitHub
@@ -72,6 +75,9 @@ github.delete-create-repository-slug=false
 #jira.migrate-jql=project\=${jira.projectId} AND created >=2019-01-01 AND created < 2022-01-01 # result 755
 #jira.migrate-jql=project\=${jira.projectId} AND created >=2022-01-01 AND created < 2024-01-01 # result 593
 #jira.migrate-jql=project\=${jira.projectId} AND created >=2024-01-01  # result 760
+
+# JQL for JBTM (Narayana) migration - open issues only
+jira.migrate-jql=project\=${jira.projectId} AND resolution \= Unresolved ORDER BY key ASC
 
 
 ##

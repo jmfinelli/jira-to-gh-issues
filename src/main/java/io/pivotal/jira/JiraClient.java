@@ -171,7 +171,11 @@ public class JiraClient {
 							.retrieve()
 							.bodyToMono(MAP_TYPE)
 							.timeout(Duration.ofSeconds(10))
-							.retry(3);
+							.retry(3)
+							.onErrorResume(ex -> {
+								logger.debug("Votes unavailable for {}: {}", issue.getKey(), ex.getMessage());
+								return Mono.just(Collections.singletonMap("votes", 0));
+							});
 					Mono<Map<String, Object>> commitsResult = webClient.get()
 							.uri(builder -> builder
 									.replacePath("jira/rest/dev-status/1.0/issue/detail")
@@ -180,7 +184,11 @@ public class JiraClient {
 							.retrieve()
 							.bodyToMono(MAP_TYPE)
 							.timeout(Duration.ofSeconds(10))
-							.retry(3);
+							.retry(3)
+							.onErrorResume(ex -> {
+								logger.debug("Dev-status unavailable for {}: {}", issue.getKey(), ex.getMessage());
+								return Mono.just(Collections.emptyMap());
+							});
 					return Mono.zip(Mono.just(issue), votesResult, commitsResult);
 				}, concurrency)
 				.doOnNext(tuple -> {

@@ -15,6 +15,7 @@
  */
 package io.pivotal.jira;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.Data;
@@ -24,13 +25,28 @@ import lombok.Data;
  *
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraUser {
 
 	String displayName;
 	String key;
+	String accountId;
 	String self;
 
+	public String getKey() {
+		if (key != null) {
+			return key;
+		}
+		return accountId;
+	}
+
 	public String getBrowserUrl() {
+		if (self != null && self.contains("atlassian.net")) {
+			String id = accountId != null ? accountId : key;
+			return UriComponentsBuilder.fromHttpUrl(self)
+					.replacePath("/jira/people/").path(id != null ? id : "unknown")
+					.replaceQuery("").toUriString();
+		}
 		return UriComponentsBuilder.fromHttpUrl(self).replacePath("jira/secure/ViewProfile.jspa").replaceQuery("").queryParam("name",key).toUriString();
 	}
 }

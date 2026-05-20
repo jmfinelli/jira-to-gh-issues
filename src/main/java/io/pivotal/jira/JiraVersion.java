@@ -17,6 +17,7 @@ package io.pivotal.jira;
 
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
@@ -24,6 +25,7 @@ import lombok.Data;
  *
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraVersion {
 	boolean archived;
 	String id;
