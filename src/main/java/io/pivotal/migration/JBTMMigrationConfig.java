@@ -30,11 +30,11 @@ public class JBTMMigrationConfig {
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.ISSUE_TYPE, "Quality Risk", "type/quality-risk");
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.ISSUE_TYPE, "CTS Challenge", "type/cts-challenge");
 
-        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Blocker", "priority/blocker");
-        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Critical", "priority/critical");
-        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Major", "priority/major");
-        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Minor", "priority/minor");
-        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Optional", "priority/optional");
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Blocker", "priority/blocker", LabelFactories.TYPE_LABEL);
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Critical", "priority/critical", LabelFactories.TYPE_LABEL);
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Major", "priority/major", LabelFactories.TYPE_LABEL);
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Minor", "priority/minor", LabelFactories.TYPE_LABEL);
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Optional", "priority/optional", LabelFactories.TYPE_LABEL);
 
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.COMPONENT, "Application Server Integration", "component/app-server", LabelFactories.TYPE_LABEL);
         //fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.COMPONENT, "BlackTie", "component/blacktie", LabelFactories.TYPE_LABEL);
