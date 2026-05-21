@@ -10,7 +10,7 @@ public class JBTMMigrationConfig {
 
     @Bean
     public MilestoneFilter milestoneFilter() {
-        return fixVersion -> true;
+        return fixVersion -> !fixVersion.isReleased() && !fixVersion.isArchived();
     }
 
     @Bean

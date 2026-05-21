@@ -18,6 +18,7 @@ package io.pivotal.jira;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.Data;
 
@@ -31,6 +32,7 @@ public class JiraComment {
 
     JiraUser author;
     DateTime created;
+	@JsonDeserialize(using = AdfToMarkdownDeserializer.class)
 	String body;
 	JiraCommentVisibility visibility;
 
