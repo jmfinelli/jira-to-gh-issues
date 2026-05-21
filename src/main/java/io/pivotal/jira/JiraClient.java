@@ -143,7 +143,13 @@ public class JiraClient {
 					int startAt = page * pageSize;
 					System.out.print((page + 1) + " ");
 					return webClient.get()
-							.uri("/search?maxResults=1000&startAt={0}&jql={jql}&fields=" + JiraIssue.FIELD_NAMES, startAt, jql)
+							.uri(builder -> builder
+									.replacePath("/rest/api/3/search/jql")
+									.queryParam("maxResults", 1000)
+									.queryParam("startAt", startAt)
+									.queryParam("jql", jql)
+									.queryParam("fields", JiraIssue.FIELD_NAMES)
+									.build())
 							.retrieve()
 							.bodyToMono(JiraSearchResult.class)
 							.onErrorResume(ex -> {
