@@ -133,32 +133,38 @@ public class JiraClient {
 	}
 
 	private Flux<JiraIssue> getIssues(String jql) {
-		int pageSize = 1000;
-		logger.info("Loading issues (1000 per page) for jql=\"{}\"", jql);
-		int concurrency = 5; // we could go higher but each brings large amount of data to convert in parallel
-		return Flux.range(0, MAX_ISSUE_COUNT_HINT / 1000)
-				.flatMap(page -> {
-					int startAt = page * pageSize;
-					System.out.print((page + 1) + " ");
-					return webClient.get()
-							.uri(builder -> builder
-									.replacePath("/rest/api/3/search/jql")
-									.queryParam("maxResults", 1000)
-									.queryParam("startAt", startAt)
-									.queryParam("jql", jql)
-									.queryParam("fields", JiraIssue.FIELD_NAMES)
-									.build())
-							.retrieve()
-							.bodyToMono(JiraSearchResult.class)
-							.onErrorResume(ex -> {
-								logger.error("page " + page + ": " + ex.getMessage(), ex);
-								return Mono.empty();
-							});
-
-				}, concurrency)
-				.sort(Comparator.comparingLong(JiraSearchResult::getStartAt))
+		int pageSize = 100;
+		logger.info("Loading issues (100 per page) for jql=\"{}\"", jql);
+		return fetchPage(jql, null, pageSize)
+				.expand(result -> {
+					if (result.getNextPageToken() == null) {
+						return Mono.empty();
+					}
+					return fetchPage(jql, result.getNextPageToken(), pageSize);
+				})
 				.concatMapIterable(JiraSearchResult::getIssues)
 				.doOnComplete(() -> System.out.println("complete"));
+	}
+
+	private Mono<JiraSearchResult> fetchPage(String jql, String nextPageToken, int pageSize) {
+		System.out.print("* ");
+		return webClient.get()
+				.uri(builder -> {
+					builder.replacePath("/rest/api/3/search/jql")
+							.queryParam("maxResults", pageSize)
+							.queryParam("jql", jql)
+							.queryParam("fields", JiraIssue.FIELD_NAMES);
+					if (nextPageToken != null) {
+						builder.queryParam("nextPageToken", nextPageToken);
+					}
+					return builder.build();
+				})
+				.retrieve()
+				.bodyToMono(JiraSearchResult.class)
+				.onErrorResume(ex -> {
+					logger.error("page fetch failed: " + ex.getMessage(), ex);
+					return Mono.empty();
+				});
 	}
 
 	/**

@@ -32,6 +32,7 @@ public class JiraSearchResult {
 	long startAt;
 	long maxResults;
 	long total;
+	String nextPageToken;
 
 	public Long getNextStartAt() {
 		long lastResult = startAt + maxResults;
