@@ -99,9 +99,7 @@ public class JiraClient {
 	}
 
 	private Mono<List<JiraIssue>> getAndCollectIssues(String jql) {
-		return getIssues(jql).flatMap(
-                        this::findRemoteLinks
-				).collectList()
+		return getIssues(jql).distinct(JiraIssue::getKey).flatMap(this::findRemoteLinks).collectList()
 				.doOnNext(issues -> {
 					logger.info("Found {} issues", issues.size());
 
@@ -167,9 +165,9 @@ public class JiraClient {
 	 * @param issues the issues to populate
 	 */
 	private Mono<Void> populateVotesAndCommits(List<JiraIssue> issues) {
-		logger.info("Loading votes and commits for {} issues (2 requests per issue/iteration)", issues.size());
+		logger.info("Loading votes for {} issues", issues.size());
 		ProgressTracker tracker = new ProgressTracker(issues.size(), 50, 1000, logger.isDebugEnabled());
-		int concurrency = 8; // 16 concurrent requests (2 per flatMap)s
+		int concurrency = 4;
 		return Flux.fromIterable(issues)
 				.flatMap(issue -> {
 					Mono<Map<String, Object>> votesResult = webClient.get()
@@ -182,24 +180,11 @@ public class JiraClient {
 								logger.debug("Votes unavailable for {}: {}", issue.getKey(), ex.getMessage());
 								return Mono.just(Collections.singletonMap("votes", 0));
 							});
-					Mono<Map<String, Object>> commitsResult = webClient.get()
-							.uri(builder -> builder
-									.replacePath("jira/rest/dev-status/1.0/issue/detail")
-									.query("issueId={id}&applicationType=github&dataType=repository")
-									.build(issue.getId()))
-							.retrieve()
-							.bodyToMono(MAP_TYPE)
-							.timeout(Duration.ofSeconds(10))
-							.retry(3)
-							.onErrorResume(ex -> {
-								logger.debug("Dev-status unavailable for {}: {}", issue.getKey(), ex.getMessage());
-								return Mono.just(Collections.emptyMap());
-							});
-					return Mono.zip(Mono.just(issue), votesResult, commitsResult);
+					return Mono.zip(Mono.just(issue), votesResult);
 				}, concurrency)
 				.doOnNext(tuple -> {
 					tuple.getT1().setVotes((int) tuple.getT2().get("votes"));
-					tuple.getT1().setCommitUrls(extractCommits(tuple.getT3()));
+					tuple.getT1().setCommitUrls(Collections.emptyList());
 					tracker.updateForIteration();
 				})
 				.doOnComplete(tracker::stopProgress)
@@ -209,7 +194,7 @@ public class JiraClient {
 	@SuppressWarnings("unchecked")
 	private List<String> extractCommits(Map<String, Object> result) {
 		List<Map<String, Object>> details = (List<Map<String, Object>>) result.get("detail");
-		if (!details.isEmpty()) {
+		if (details != null && !details.isEmpty()) {
 			List<Map<String, Object>> repos = (List<Map<String, Object>>) details.get(0).get("repositories");
 			if (!repos.isEmpty()) {
 				List<Map<String, Object>> commits = (List<Map<String, Object>>) repos.get(0).get("commits");
