@@ -39,8 +39,7 @@ public class JiraIssue {
 
 	public static final String FIELD_NAMES = "summary,comment,assignee,components,created,creator," +
 			"description,versions,fixVersions,issuetype,reporter,resolution,status,issuelinks," +
-			"resolution,updated,parent,subtasks,labels,attachment,watches," +
-			"customfield_10120,customfield_10684,security,priority";
+			"updated,parent,subtasks,labels,attachment,watches,security,priority";
 
 
 	String id;
@@ -141,10 +140,6 @@ public class JiraIssue {
 		List<String> labels;
 		List<JiraAttachment> attachment;
 		JiraWatcher watches;
-		@JsonProperty("customfield_10120")
-		String referenceUrl;
-		@JsonProperty("customfield_10684")
-		String pullRequestUrl;
 		JiraSecurity security;
 
 		public boolean isPublic() {

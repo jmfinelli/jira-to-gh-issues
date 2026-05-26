@@ -573,9 +573,6 @@ public class  MigrationClient {
 			jiraDetails += fields.getVersions().stream().map(JiraVersion::getName)
 					.collect(Collectors.joining(", ", "\n**Affects:** ", "\n"));
 		}
-		if (fields.getReferenceUrl() != null) {
-			jiraDetails += "\n**Reference URL:** " + fields.getReferenceUrl() + "\n";
-		}
 		List<JiraAttachment> attachments = fields.getAttachment();
 		if (!attachments.isEmpty()) {
 			jiraDetails += attachments.stream()
@@ -647,14 +644,6 @@ public class  MigrationClient {
 					.collect(Collectors.joining("\n", "\n**Remote Links:**\n", "\n"));
 		}
 		List<String> references = new ArrayList<>();
-		if (fields.getPullRequestUrl() != null) {
-			// Avoid inserting links to actual pull requests while in testing mode since
-			// that generates events in the timeline of the pull requests, e.g.
-			// https://github.com/spring-projects/spring-framework/pull/1997
-			if (!getConfig().isDeleteCreateRepositorySlug()) {
-				references.add("pull request " + fields.getPullRequestUrl());
-			}
-		}
 		if (!issue.getCommitUrls().isEmpty()) {
 			references.add(issue.getCommitUrls().stream().collect(Collectors.joining(", ", "commits ", "")));
 		}
