@@ -29,6 +29,9 @@ public class JBTMMigrationConfig {
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.ISSUE_TYPE, "Release", "type/release");
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.ISSUE_TYPE, "Quality Risk", "type/quality-risk");
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.ISSUE_TYPE, "CTS Challenge", "type/cts-challenge");
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.LABEL, "good-first-issue", "good-first-issue", LabelFactories.TYPE_LABEL);
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.LABEL, "hacktoberfest", "hacktoberfest", LabelFactories.TYPE_LABEL);
+        fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.LABEL, "testing-improvements", "testing-improvements", LabelFactories.TYPE_LABEL);
 
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Blocker", "priority/blocker", LabelFactories.TYPE_LABEL);
         fieldValueHandler.addMapping(FieldValueLabelHandler.FieldType.PRIORITY, "Critical", "priority/critical", LabelFactories.TYPE_LABEL);
