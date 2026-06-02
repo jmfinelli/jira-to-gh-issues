@@ -80,7 +80,7 @@ public class AssigneesReport extends BaseApp {
 					continue;
 				}
 
-				String[] parts = line.split(":");
+				String[] parts = line.split("=");
 
 				if (parts.length < 2) {
 					System.out.println("Invalid line: " + line);
